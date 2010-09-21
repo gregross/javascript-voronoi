@@ -2,7 +2,7 @@
 <html>
         <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-                <title>A Magic Table</title>
+                <title>JavaScript Voronoi</title>
                 
                 <link rel="stylesheet" href="http://magic-table.googlecode.com/svn/trunk/magic-table/google_visualisation/example.css" type="text/css">
                 <!--[if IE]><script type="text/javascript" src="http://javascript-voronoi.googlecode.com/svn/trunk/javascript/excanvas.js"></script><![endif]-->
@@ -45,33 +45,61 @@
         </head>
         <body>
         <div class="g-unit" id="gc-pagecontent">
-        <h1 class="page_title">Visualization: A Magic Table</h1>
+        <h1 class="page_title">Visualization: JavaScript Voronoi</h1>
 
         <div class="toc">
-                <ol>
+            <ol>
+                <li><a href="#Overview">Overview</a>
+                <li><a href="#Example">Example</a>
+                <li><a href="#Loading">Loading</a>
+                <li><a href="#Data_Format">Data Format</a>
+                <li><a href="#Configuration_Options">Configuration Options</a>
+                <li><a href="#Methods">Methods</a>
 
-                        <li><a href="#Overview">Overview</a>
-                        <li><a href="#Example">Example</a>
-                        <li><a href="#Loading">Loading</a>
-                        <li><a href="#Data_Format">Data Format</a>
-                        <li><a href="#Configuration_Options">Configuration Options</a>
-                        <li><a href="#Methods">Methods</a>
-
-                        <li><a href="#Events">Events</a>
-                        <li><a href="#Data_Policy">Data Policy</a>
-                </ol>
+                <li><a href="#Events">Events</a>
+                <li><a href="#Data_Policy">Data Policy</a>
+            </ol>
         </div>
 
         <h1><a name="Overview" id="Overview"></a>Overview</h1>
         <p>
-        The Magic Table is a JavaScript library that allows you to see more in your data by applying some simple visual techniques to transform a table.
- The table is displayed in the browser by the canvas element. <span style="font-weight:bold;">Internet Explorer is not supported</span>.
- Instead, it is intended that the library is used in applications that have, wisely, embedded a non-IE browser engine such as 
- <a href="http://developer.mozilla.org/en/docs/Gecko_Embedding_Basics">Gecko</a> or <a href="http://en.wikipedia.org/wiki/Presto_(layout_engine)">Presto</a>.
+        This is a JavaScript implementation of an incremental algorithm for a planar ordinary Voronoi diagram.
+		The algorithm uses a quaternary tree for spatial indexing to enhance performance and facilitate efficient nearest neighbor searches.
+		<br><br>
+		An incremental algorithm was chosen over Fortune's sweepline solution so that new points can be inserted 
+		into the diagram without needing to regenerate the whole tessellation. The use of the quaternary tree also 
+		reduces the average time complexity to <span style="font-weight:bold;">O(n)</span>.
+		<br><br>
+		Tested in Chrome, Firefox, Opera, Safari an Internet Explorer 6. <span style="font-weight:bold;">Works in IE via use of excanvas.</span>
+
+		<h2>Features</h2>
+		<p>
+			<ol>
+	          <li>
+	            <span style="font-weight:bold;">fast incremental algorithm: potentially faster than Fortune's 
+	          </li>
+	          <li>
+	            add points without entire redraw 
+	          </li>
+			  <li>
+	            pure JavaScript implementation. <span style="font-weight:bold;">No need for Flash.</span>
+	          </li>
+			  <li>
+	            supports <span style="font-weight:bold;">tooltips</span> over Voronoi regions 
+	          </li>
+			  <li>
+	            customisable <span style="font-weight:bold;">colour gradients</span>
+	          </li>
+			  <li>
+	            works in all popular browsers 
+	          </li>
+	        </ol>
+		</p>
         </p>
+		<br><br>
         <p>
-                This project is hosted by Google-code. Click <a href="http://code.google.com/p/magic-table/">here</a> to go to the homepage and see
-                additional examples and documentation.
+            This project is hosted by Google-code. Click <a href="http://code.google.com/p/javascript-voronoi/">here</a> to go to the homepage and see
+            additional examples and documentation.
         </p>
         <p>
         
@@ -80,9 +108,7 @@
         </p>
         <h1><a name="Overview" id="Overview"></a>Download</h1>
         <p>
-                
-                Download the library from the project <a href="http://code.google.com/p/magic-table/">home page</a>.
-        
+            Download the library from the project <a href="http://code.google.com/p/javascript-voronoi/">home page</a>.
         </p>    
 
         <h1><a name="Example" id="Example"></a>Example</h1>
@@ -91,94 +117,76 @@
         <div id="voronoiDiv"><!-- voronoi goes here... --></div>
         <br>
         <br>
-        <span class='bodyText'>The above example demonstrates a table view of financial volatilities.
-        If the data were to be rendered in a normal table the number of rows and columns would
-        make it difficult to view them all in one go. Uncheck the 'Fisheye' box and observe how you now
-        have to scroll both horizontally and vertically. However, with the fisheye visualisation, you
-        can now see all of the data simultaneously - no need for tiresome scrolling...</span>
+        <span class='bodyText'>The above example demonstrates the JavaScript Voronoi tessellation. 
+		This is generated by the code shown below. The code creates a set of random points that determine the
+		Voronoi regions.</span>
         <br>
         <br>
         <span class='bodyText'>The following code demonstrates basic usage of the API. To see more possibilities, click
-        <a href="http://code.google.com/p/magic-table/">here</a>.</span>
+        <a href="http://code.google.com/p/javascript-voronoi/">here</a>.</span>
         <br>
         <br>
 
         <pre class="prettyprint">
 &lt;html&gt;
   &lt;head&gt;
-  &lt;title&gt;A Magic Table&lt;/title&gt;
-                
-  &lt;script type=&quot;text/javascript&quot; 
-    src='http://magic-table.googlecode.com/svn/trunk/magic-table/javascript/magic_table.js'&gt;&lt;/script&gt;
-  &lt;script type=&quot;text/javascript&quot; src=&quot;http://www.google.com/jsapi&quot;&gt;&lt;/script&gt;
-            
-  &lt;script type=&quot;text/javascript&quot;&gt;
-    google.load(&quot;visualization&quot;, &quot;1&quot;);
-    google.setOnLoadCallback(drawVisualization);
-        
-    function drawVisualization()
-    {
-      var rows = 16;
-      var columns = 5;
-      var data = new google.visualization.DataTable();
-      data.addColumn('number', 'column 1');
-      data.addColumn('number', 'column 2');
-      data.addColumn('number', 'column 3');
-      data.addColumn('number', 'column 4');
-      data.addColumn('number', 'column 5');
-      data.addRows(rows);
-
-      var i = rows - 1;
-      var j;
-                
-      do
-      {
-         j = columns - 1;
-         do
-         {
-            data.setCell(i, j, Math.round(Math.random()*10));
-         }
-         while (j-- &gt; 0) 
-      }
-      while (i-- &gt; 0)
-
-      var vis = new greg.ross.visualisation.MagicTable(document.getElementById('chart_div'));
-
-      options = {};
-      options.tableTitle = &quot;Bar-fill&quot;;
-      options.enableFisheye = true;
-      options.enableBarFill = true;
-      options.defaultRowHeight = 25;
-      options.columnWidths = [{column : 0, width : 130}];
-      options.defaultColumnWidth = 60;
-      options.rowHeaderCount = 0;
-      options.columnHeaderCount = 0;
-      options.tablePositionX = 0;
-      options.tablePositionY = 0;
-      options.tableHeight = 403;
-      options.tableWidth = 315;
-      options.colourRamp = getColourRamp();
-
-      vis.draw(data, options);
-  }
-  
-  function getColourRamp()
-  {
-      var colour1 = {red:0, green:0, blue:255};
-      var colour2 = {red:0, green:255, blue:255};
-      var colour3 = {red:0, green:255, blue:0};
-      var colour4 = {red:255, green:255, blue:0};
-      var colour5 = {red:255, green:0, blue:0};
-      return [colour1, colour2, colour3, colour4, colour5];
-  }
-        
-  &lt;/script&gt;
-                
+	&lt;meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /&gt;
+	
+	&lt;!--[if IE]&gt;&lt;script type="text/javascript" 
+	  src="http://javascript-voronoi.googlecode.com/svn/trunk/javascript/excanvas.js"&gt;&lt;/script&gt;
+	  &lt;![endif]--&gt;
+	  
+	&lt;script type="text/javascript" 
+	  src='http://javascript-voronoi.googlecode.com/svn/trunk/javascript/Voronoi.js'&gt;&lt;/script&gt;
+	  
+	&lt;script type="text/javascript" src="http://www.google.com/jsapi"&gt;&lt;/script&gt;
+		
+	&lt;title&gt;Voronoi test stub&lt;/title&gt;
+		
   &lt;/head&gt;
   &lt;body&gt;
-    &lt;div id=&quot;chart_div&quot;&gt;&lt;/div&gt;
+		
+	&lt;script type='text/javascript'&gt;
+			
+	  google.load("visualization", "1");
+	  google.setOnLoadCallback(setUp);
+		
+	  function setUp()
+	  {
+	      	var numPoints = 100;
+	        var tooltipStrings = [];
+	        var data = new google.visualization.DataTable();
+	        data.addColumn('number', 'Age');
+	        data.addColumn('number', 'Weight');
+	        data.addRows(numPoints);
+			
+	        for (var i = 0; i &lt; numPoints; i++) 
+	        {
+	          var randomX = Math.floor(Math.random() * (numPoints + 1));
+	          var randomY = Math.floor(Math.random() * (numPoints + 1));
+				
+	          data.setValue(i, 0, randomX);
+	          data.setValue(i, 1, randomY);
+				
+	          tooltipStrings[i] = "x = " + randomX + ", y = " + randomY;
+	        }
+	
+	        voronoi = new greg.ross.visualisation.Voronoi(document.getElementById("voronoiDiv"));
+			
+	        var colours = ['#A7D30C', '#019F62', 'rgba(1,159,98,0)'];
+			
+	        voronoi.draw(data, {xPos: 50, yPos: 50, width: 500, height: 500, 
+			  colourGradient: colours, fillPolygons: true, tooltips: tooltipStrings});
+	  }
+		
+      &lt;/script&gt;
+
+      &lt;div id='voronoiDiv'&gt;
+      &lt;!-- Voronoi goes here... --&gt;
+      &lt;/div&gt;
+	
   &lt;/body&gt;
-&lt;/html&gt;
+&lt;/html&gt;        	
         </pre>
 
         <h1><a name="Loading" id="Loading"></a>Loading</h1>
@@ -188,31 +196,24 @@
         </p>
 
         <pre class="prettyprint">
-                google.load("visualization", "1");
+google.load("visualization", "1");
         </pre>
         
         <p>
-                The visualization's class name is <code>greg.ross.visualisation.MagicTable</code>
+            The visualization's class name is <code>greg.ross.visualisation.Voronoi</code>
         </p>
         
         <pre class="prettyprint">
-                var vis = new greg.ross.visualisation.MagicTable(document.getElementById('chart_div'));
+var voronoi = new greg.ross.visualisation.Voronoi(document.getElementById("voronoiDiv"));
         </pre>
         
         <h1><a name="Data_Format" id="Data_Format"></a>Data Format</h1>
         
         <br>
-        The table can contain strings as well as numbers, although the default background colour for strings is white.
+        Two columns are required and both must be numeric. The values in the first column are used for the X-axis and those in the second column are
+		 for the Y-axis. 
         
-        <ol>
-          <li>
-            Any number of rows and columns.
-          </li>
-          <li>
-            Any number of row and header scale cells. These are displayed when the 'fisheye' function is switched off.
-          </li>
-        
-        </ol>
+		A tooltip for each point must be specified in a separate array. See the section on options, below, for details.
         
         <h1><a name="Configuration_Options" id="Configuration_Options"></a>Configuration Options</h1>
         
@@ -222,98 +223,59 @@
             <th>Name</th>
             <th>Type</th>
             <th>Default</th>
-        
             <th>Description</th>
           </tr>
-          <tr>
-            <td>tableTitle</td>
-            <td>String</td>
-            <td>none</td>
-        
-            <td>The title that appears above the table.
-            </td>
-          </tr>
-          <tr>
-            <td>enableFisheye</td>
-            <td>boolean</td>
-            <td>true</td>
-            <td>This switches the fisheye function on or off.
-            </td>
-        
-          </tr>
-          <tr>
-            <td>enableBarFill</td>
-            <td>boolean</td>
-            <td>false</td>
-            <td>This switches the bar-fill function on or off.
-            </td>
-          </tr>
-          <tr>
-            <td>defaultRowHeight</td>
-            <td>number</td>
-            <td>none</td>
-            <td>The default height of rows when the fisheye function is switched off.</td>
-          </tr>
-          <tr>
-            <td>defaultColumnWidth</td>
-            <td>number</td>
-            <td>none</td>
-            <td>The default width of columns when the fisheye function is switched off.</td>
-          </tr>
-          <tr>
-            <td>columnWidths</td>
-            <td>object</td>
-            <td>none</td>
-            <td>An array of objects. Each object has a 'column' index property and a 'width' property.</td>
-          </tr>
-          <tr>
-            <td>rowHeaderCount</td>
+		  <tr>
+            <td>xPos</td>
             <td>number</td>
             <td>0</td>
-            <td>This specifies the number of vertical scales, i.e. the row headers.
+            <td>The x-position of the view, relative to the containing element.
             </td>
           </tr>
           <tr>
-            <td>columnHeaderCount</td>
+            <td>yPos</td>
             <td>number</td>
             <td>0</td>
-            <td>This specifies the number of horizontal scales, i.e. the column headers.
+            <td>The y-position of the view, relative to the containing element.
             </td>
           </tr>
           <tr>
-            <td>tablePositionX</td>
-            <td>number</td>
-            <td>0</td>
-            <td>The x-position of the table, relative to the containing element.
-            </td>
-          </tr>
-          <tr>
-            <td>tablePositionY</td>
-            <td>number</td>
-            <td>0</td>
-            <td>The y-position of the table, relative to the containing element.
-            </td>
-          </tr>
-          <tr>
-            <td>tableHeight</td>
+            <td>width</td>
             <td>number</td>
             <td>none</td>
-            <td>The height of the table.
+            <td>The width of the view.
             </td>
           </tr>
           <tr>
-            <td>tableWidth</td>
+            <td>height</td>
             <td>number</td>
             <td>none</td>
-            <td>The width of the table.
+            <td>The height of the view.
             </td>
           </tr>
-          <tr>
-            <td>colourRamp</td>
+		  <tr>
+            <td>colourGradient</td>
             <td>Colour array</td>
             <td>none</td>
-            <td>Provides colours that will be applied across the range of values in the table.
+            <td>Should contain three colours. Thes determine the radial gradient that is applied to Voronoi regions.
             </td>
+          </tr>
+          <tr>
+            <td>fillPolygons</td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Determines whether the Voronoi regions are gradient-filled with the colours specified above.
+			<span style="font-weight:bold;">This should be set to false when the target browser is IE because
+			it significantly reduces the rendering speed.</span>
+            </td>
+          </tr>
+          <tr>
+            <td>tooltips</td>
+            <td>String array</td>
+            <td>none</td>
+            <td>This is an array of string corresponding to the points in the view.
+			The tooltip for a particular point is displayed when the mouse is moved into its
+			Voronoi region.</td>
           </tr>
         </table>
         
@@ -350,10 +312,5 @@
 
       </div>
           
-          <p>
-                        <img
-                src="http://www.w3.org/Icons/valid-html401-blue"
-                alt="Valid HTML 4.01 Strict" height="31" width="88">
-                </p>
         </body>
 </html>
