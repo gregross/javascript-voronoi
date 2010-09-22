@@ -674,6 +674,7 @@ greg.ross.visualisation.JSVoronoi = function(x, y, width, height, colourGradient
 			
 			var e = new Array();
 			var bFinished = false;
+			var minDist = 999999.9;
 			
 			while (!bFinished)
 			{
@@ -688,7 +689,6 @@ greg.ross.visualisation.JSVoronoi = function(x, y, width, height, colourGradient
 				// not pgi. Find the polygon that gives the smallest
 				// distance to p
 				
-				var minDist = 999999.9;
 				var dist;
 				var otherP;
 				var ed;
@@ -1708,10 +1708,21 @@ greg.ross.visualisation.JSVoronoi = function(x, y, width, height, colourGradient
 		if (isIE())
 			var e = window.event;
 
-		var xi = (e.clientX - (width / 2.0)) / (scaleX * (width / 2.0)) - offsetX;
-		var yi = ((height - e.clientY) - (height / 2.0)) / (scaleY * (height / 2.0)) - offsetY;
+		var xi = e.clientX - x;
+		var yi =  e.clientY - y;
 		
-		var position = new greg.ross.visualisation.Vertex(e.clientX-x, e.clientY-y, 1);
+		if (e.layerX || e.layerX == 0) // Firefox
+		{
+		    xi = e.layerX;
+		    yi = e.layerY;
+		}
+		else if (e.offsetX || e.offsetX == 0) // Opera
+		{
+		    xi = e.offsetX;
+		    yi = e.offsetY;
+		}
+		
+		var position = new greg.ross.visualisation.Vertex(xi, yi, 1);
 		var rootNode = qTree.getRootNode();
 		var closestLeafNode = getClosestLeafNode(position, rootNode);
 		
