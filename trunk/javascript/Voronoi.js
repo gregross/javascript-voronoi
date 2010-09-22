@@ -1705,8 +1705,19 @@ greg.ross.visualisation.JSVoronoi = function(x, y, width, height, colourGradient
 	
 	function displayTooltip(e)
 	{
+		var xi;
+		var yi;
+		
 		if (isIE())
+		{
 			var e = window.event;
+			
+			if (e.srcElement.getAttribute('Stroked') == true)
+				return;
+			
+			xi = e.offsetX;
+			yi = e.offsetY;
+		}
 
 		var xi = e.clientX - x;
 		var yi =  e.clientY - y;
