@@ -1723,8 +1723,7 @@ greg.ross.visualisation.JSVoronoi = function(x, y, width, height, colourGradient
 				mousePosY = e.offsetY;
 			}
 		}
-
-		if (e.layerX || e.layerX == 0) // Firefox
+		else if (e.layerX || e.layerX == 0) // Firefox
 		{
 		    mousePosX = e.layerX;
 		    mousePosY = e.layerY;
