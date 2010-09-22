@@ -106,6 +106,9 @@ greg.ross.visualisation.JSVoronoi = function(x, y, width, height, colourGradient
 	var scaleX  = 1.9;  scaleY  = 1.9;
 	var offsetX = -0.5;  offsetY = -0.5;
 	
+	var mousePosX = null;
+	var mousePosY = null;
+	
 	function init()
     {
 		createTargetDiv(); 
@@ -1705,35 +1708,34 @@ greg.ross.visualisation.JSVoronoi = function(x, y, width, height, colourGradient
 	
 	function displayTooltip(e)
 	{
-		var xi;
-		var yi;
-		
 		if (isIE())
 		{
 			var e = window.event;
 			
 			if (e.srcElement.getAttribute('Stroked') == true)
-				return;
-			
-			xi = e.offsetX;
-			yi = e.offsetY;
+			{
+				if (mousePosX == null || mousePosY == null)
+					return;
+			}
+			else
+			{
+				mousePosX = e.offsetX;
+				mousePosY = e.offsetY;
+			}
 		}
 
-		var xi = e.clientX - x;
-		var yi =  e.clientY - y;
-		
 		if (e.layerX || e.layerX == 0) // Firefox
 		{
-		    xi = e.layerX;
-		    yi = e.layerY;
+		    mousePosX = e.layerX;
+		    mousePosY = e.layerY;
 		}
 		else if (e.offsetX || e.offsetX == 0) // Opera
 		{
-		    xi = e.offsetX;
-		    yi = e.offsetY;
+		    mousePosX = e.offsetX;
+		    mousePosY = e.offsetY;
 		}
 		
-		var position = new greg.ross.visualisation.Vertex(xi, yi, 1);
+		var position = new greg.ross.visualisation.Vertex(mousePosX, mousePosY, 1);
 		var rootNode = qTree.getRootNode();
 		var closestLeafNode = getClosestLeafNode(position, rootNode);
 		
