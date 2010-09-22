@@ -14,6 +14,11 @@
 					google.load("visualization", "1");
 					google.setOnLoadCallback(setUp);
 					
+					function isIE()
+				    {
+						return /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);
+				    }
+			
 					function setUp()
 					{
 						var numPoints = 100;
@@ -36,8 +41,11 @@
 		
 						voronoi = new greg.ross.visualisation.Voronoi(document.getElementById("voronoiDiv"));
 						
+						// Don't fill polygons in IE. It's too slow.
+						var fillPly = !isIE();
+						
 						var colours = ['#A7D30C', '#019F62', 'rgba(1,159,98,0)'];
-						voronoi.draw(data, {xPos: 50, yPos: 0, width: 500, height: 500, colourGradient: colours, fillPolygons: true, tooltips: tooltipStrings});
+						voronoi.draw(data, {xPos: 50, yPos: 0, width: 500, height: 500, colourGradient: colours, fillPolygons: fillPly, tooltips: tooltipStrings});
 					}
 						
                 </script>
