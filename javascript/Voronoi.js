@@ -49,6 +49,12 @@ registerNameSpace("greg.ross.visualisation");
 greg.ross.visualisation.Voronoi = function(container)
 {
     this.containerElement = container;
+    
+    this.addNewPoint = function(p)
+    {
+    	if (this.voronoi != undefined)
+    		this.voronoi.addNewPoint(p);
+    }
 }
 
 greg.ross.visualisation.Voronoi.prototype.draw = function(data, options)
@@ -173,13 +179,35 @@ greg.ross.visualisation.JSVoronoi = function(x, y, width, height, colourGradient
 			fillPolygons();
 		else	
 			renderEdges();
-			
+		
 		renderGenerators(data);
 	}
 	
 	this.redraw = function(data)
 	{
+		this.data = data;
 		render(data);
+	}
+	
+	this.addNewPoint = function(p)
+	{
+		var xPos = mapValueToZeroOneInterval(p.x, minX, maxX)
+		var yPos = mapValueToZeroOneInterval(p.y, minX, maxX)
+		
+		var transformedP = new greg.ross.visualisation.Vertex(xPos, yPos, 1);
+		
+		var rootNode = qTree.getRootNode();
+		var closestLeafNode = getClosestLeafNode(transformedP, rootNode);
+		addGenerator(transformedP, closestLeafNode);
+		
+		this.data.addRow([p.x, p.y]);
+		
+		if (fillRegions == true)
+			fillPolygons();
+		else	
+			renderEdges();
+			
+		renderGenerators(this.data);
 	}
 	
 	function fillPolygons()

@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+        <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+                <title>JavaScript Voronoi</title>
+                
+                <link rel="stylesheet" href="http://magic-table.googlecode.com/svn/trunk/magic-table/google_visualisation/example.css" type="text/css">
+                <!--[if IE]><script type="text/javascript" src="http://javascript-voronoi.googlecode.com/svn/trunk/javascript/excanvas.js"></script><![endif]-->
+				<script type="text/javascript" src='javascript/Voronoi.js'></script>
+                <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+            
+                <script type="text/javascript">
+                     
+					google.load("visualization", "1");
+					google.setOnLoadCallback(setUp);
+					
+					var voronoi, data;
+					
+					function isIE()
+				    {
+						return /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);
+				    }
+			
+					function setUp()
+					{
+						var numPoints = 100;
+						var tooltipStrings = [];
+						data = new google.visualization.DataTable();
+				        data.addColumn('number', 'Age');
+				        data.addColumn('number', 'Weight');
+				        data.addRows(numPoints);
+						
+						for (var i = 0; i < numPoints; i++) 
+						{
+							var randomX = Math.floor(Math.random() * (numPoints + 1));
+							var randomY = Math.floor(Math.random() * (numPoints + 1));
+							
+							data.setValue(i, 0, randomX);
+							data.setValue(i, 1, randomY);
+							
+							tooltipStrings[i] = "x = " + randomX + ", y = " + randomY;
+						}
+		
+						voronoi = new greg.ross.visualisation.Voronoi(document.getElementById("voronoiDiv"));
+						
+						// Don't fill polygons in IE. It's too slow.
+						var fillPly = !isIE();
+						
+						var colours = ['#A7D30C', '#019F62', 'rgba(1,159,98,0)'];
+						voronoi.draw(data, {xPos: 50, yPos: 0, width: 500, height: 500, colourGradient: colours, fillPolygons: fillPly, tooltips: tooltipStrings});
+					}
+					
+					function addRandomPoint()
+					{
+						var numPoints = data.getNumberOfRows() + 1;
+						var p = new greg.ross.visualisation.Vertex(Math.random() * (numPoints + 1), Math.random() * (numPoints + 1), 1);
+						
+						voronoi.addNewPoint(p);
+					}
+						
+                </script>
+                
+        </head>
+        <body>
+        
+        <br><br>
+        <div id="voronoiDiv"><!-- voronoi goes here... --></div>
+        <br><br>
+        
+        <input type="button" value="add random point" onclick="addRandomPoint();" />
+        
+          
+        </body>
+</html>
