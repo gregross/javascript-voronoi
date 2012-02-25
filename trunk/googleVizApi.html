@@ -13,6 +13,7 @@
                         
 					google.load("visualization", "1");
 					google.setOnLoadCallback(setUp);
+					var data;
 					
 					function isIE()
 				    {
@@ -23,7 +24,7 @@
 					{
 						var numPoints = 100;
 						var tooltipStrings = [];
-						var data = new google.visualization.DataTable();
+						data = new google.visualization.DataTable();
 				        data.addColumn('number', 'Age');
 				        data.addColumn('number', 'Weight');
 				        data.addRows(numPoints);
@@ -46,6 +47,14 @@
 						
 						var colours = ['#A7D30C', '#019F62', 'rgba(1,159,98,0)'];
 						voronoi.draw(data, {xPos: 50, yPos: 0, width: 500, height: 500, colourGradient: colours, fillPolygons: fillPly, tooltips: tooltipStrings});
+					}
+					
+					function addRandomPoint()
+					{
+						var numPoints = data.getNumberOfRows() + 1;
+						var p = new greg.ross.visualisation.Vertex(Math.random() * (numPoints + 1), Math.random() * (numPoints + 1), 1);
+						
+						voronoi.addNewPoint(p);
 					}
 						
                 </script>
@@ -144,6 +153,7 @@
 
         <br>
         <div id="voronoiDiv"><!-- voronoi goes here... --></div>
+		<input type="button" value="add random point" onclick="addRandomPoint();" />
         <br>
         <br>
         <span class='bodyText'>The above example demonstrates the JavaScript Voronoi tessellation. 
@@ -322,6 +332,11 @@ var voronoi = new greg.ross.visualisation.Voronoi(document.getElementById("voron
             <td><code>draw(data, options)</code></td>
             <td>none</td>
             <td>Draws the view.</td>
+          </tr>
+          <tr>
+            <td><code>addNewPoint(p)</code></td>
+            <td>none</td>
+            <td>Adds a new point into the diagram without having to recalculate the complete tessellation.</td>
           </tr>
         </table>  
         
