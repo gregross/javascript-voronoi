@@ -55,6 +55,15 @@ greg.ross.visualisation.Voronoi = function(container)
     	if (this.voronoi != undefined)
     		this.voronoi.addNewPoint(p);
     }
+	
+}
+
+greg.ross.visualisation.Voronoi.prototype.generate = function(data)
+{
+	if (this.voronoi == undefined)
+        this.voronoi = new greg.ross.visualisation.JSVoronoi(0, 0, 0, 0, null, null, false, null);
+		
+	return this.voronoi.getCoordinates(data);
 }
 
 greg.ross.visualisation.Voronoi.prototype.draw = function(data, options)
@@ -208,6 +217,92 @@ greg.ross.visualisation.JSVoronoi = function(x, y, width, height, colourGradient
 			renderEdges();
 			
 		renderGenerators(this.data);
+	}
+	
+	this.getCoordinates = function(data)
+	{
+        calculateMinMaxCoords(data);
+        createSeedGraph();
+        
+        // Get the vertex in the centre of the circle that
+        // circumbscribes the three points.
+        createFirstVertex();
+        
+        // Create the vertices that represent the points on the
+        // closed curve that surround the augmented geometric graph.
+        createInfiniteVertices();
+        
+        // Create the winged-edge data structure.
+        createWingedEdge();
+        
+        // Remove the temporary store of vertices.
+        vertices = [];
+        
+        // Build the quaternary tree for fast indexing.
+        
+        var generators = new Array();
+        var numPoints = data.getNumberOfRows();
+        var i = numPoints - 1;
+        var margin = 50;
+        
+        do 
+        {
+            var xCoord = data.getValue(i, 0);
+            var yCoord = data.getValue(i, 1);
+            xCoord = mapValueToZeroOneInterval(xCoord, minX, maxX);
+            yCoord = mapValueToZeroOneInterval(yCoord, minY, maxY);
+            
+            var v = new greg.ross.visualisation.Vertex(xCoord, yCoord, 1);
+            generators[i] = v;
+        }
+        while (i-- > 0)
+        
+        qTree = new greg.ross.visualisation.QuaternaryTree(generators, p1);
+        
+        try
+        {
+            populateDiagram();
+        }
+        catch(err)
+        {
+            //alert("Some edges are co-incident or parallel.");
+        }
+        
+		var n, x, y, v, nv, generator;
+		n = polygons.length;
+		var coords = [];
+		var coord = {};
+        
+        for (var i = 0; i < n; i++) {
+			v = new Array();
+			getEdgesAndVertices(polygons[i], null, v);
+			
+			generator = (polygons[i]).generator;
+			
+			if (generator == null)
+			 continue;
+			
+			coord = {};
+			coord.x = generator.x;
+			coord.y = generator.y;
+			coord.polygon = [];
+			
+			nv = v.length;
+            
+            for (var j = 0; j < nv; j++) {
+				
+				x = v[0].x;
+                y = v[0].y;
+			
+			    coord.polygon.push(x);
+				coord.polygon.push(y);
+			}
+			
+			coords.push(coord);
+		}
+		
+		return coords;
+        
 	}
 	
 	function fillPolygons()
