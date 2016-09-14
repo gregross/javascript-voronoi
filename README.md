@@ -11,7 +11,7 @@ An incremental algorithm was chosen over Fortune's sweepline solution so that ne
 
 Tested in Chrome, Firefox, Opera, Safari and Internet Explorer 6. **Works in IE via use of excanvas.** (See test.html in the download.)
 
-## See [here](http://www.grvisualisation.50webs.com/javascript_voronoi.html) for a working example. Also, see the [jsFiddle](http://jsfiddle.net/gregross/dcdw2/) example. ##
+## See [here](http://www.grvisualisation.50webs.com/javascript_voronoi.html) for a working example. Also, see the [jsFiddle](http://jsfiddle.net/dcdw2/50/) example. ##
 
 ## See [here](googleVizApi.html) for API details. ##
 
